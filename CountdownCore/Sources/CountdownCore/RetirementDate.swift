@@ -40,6 +40,9 @@ public struct RetirementDate: Equatable, Hashable, Codable {
         var c = Calendar(identifier: .gregorian); c.timeZone = .current; return c
     }()) -> RetirementDate {
         let comps = calendar.dateComponents([.year, .month, .day], from: date)
-        return RetirementDate(year: comps.year!, month: comps.month!, day: comps.day!)
+        guard let y = comps.year, let m = comps.month, let d = comps.day else {
+            fatalError("Calendar \(calendar.identifier) failed to decompose date \(date)")
+        }
+        return RetirementDate(year: y, month: m, day: d)
     }
 }

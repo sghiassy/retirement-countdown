@@ -42,6 +42,20 @@ final class RetirementDateTests: XCTestCase {
         XCTAssertEqual(rd.isoString, "2027-09-01")
     }
 
+    func testFromDateTimezoneEdge() {
+        // A date at 00:30 UTC is still "Aug 31" in UTC-1 — confirm from() uses the provided calendar's timezone
+        var utcMinus1 = Calendar(identifier: .gregorian)
+        utcMinus1.timeZone = TimeZone(secondsFromGMT: -3600)!
+
+        // 2027-09-01 00:30 UTC = 2027-08-31 23:30 in UTC-1
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        let dateUTC = formatter.date(from: "2027-09-01T00:30:00Z")!
+
+        let rd = RetirementDate.from(date: dateUTC, calendar: utcMinus1)
+        XCTAssertEqual(rd.isoString, "2027-08-31")
+    }
+
     func testRetirementRecordCoding() throws {
         let record = RetirementRecord(
             retirementDate: RetirementDate(string: "2027-09-01"),

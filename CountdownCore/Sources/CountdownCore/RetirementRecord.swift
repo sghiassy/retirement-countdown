@@ -3,6 +3,7 @@ import Foundation
 public struct RetirementRecord: Equatable, Codable {
     public let retirementDate: RetirementDate?
     public let changeRevision: Int
+    // Only schema version 1 is defined in v1. Future versions should validate this on decode.
     public let schemaVersion: Int
 
     public init(
