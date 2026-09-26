@@ -15,4 +15,3 @@ struct retirement_countdownApp: App {
         }
     }
 }
-0
