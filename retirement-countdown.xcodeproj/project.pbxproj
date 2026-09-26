@@ -11,6 +11,9 @@
 		AA6154D8306811B800C25838 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6154D7306811B800C25838 /* SwiftUI.framework */; };
 		AA6154E9306811B900C25838 /* retirement-countdownWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA6154D3306811B800C25838 /* retirement-countdownWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA6154F7306811FB00C25838 /* retirement-countdownWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA6154F6306811FB00C25838 /* retirement-countdownWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA61555F306814DB00C25838 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA61555E306814DB00C25838 /* WatchConnectivity.framework */; platformFilters = (ios, xros, ); };
+		AA615561306814EB00C25838 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA615560306814EB00C25838 /* WatchConnectivity.framework */; };
+		AA6155623068150F00C25838 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA61555E306814DB00C25838 /* WatchConnectivity.framework */; platformFilters = (ios, xros, ); };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +93,8 @@
 		AA6154F6306811FB00C25838 /* retirement-countdownWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "retirement-countdownWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA615505306811FC00C25838 /* retirement-countdownWatch Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "retirement-countdownWatch Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA61550F306811FC00C25838 /* retirement-countdownWatch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "retirement-countdownWatch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA61555E306814DB00C25838 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
+		AA615560306814EB00C25838 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS27.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -147,6 +152,7 @@
 		AA61549A3067197F00C25838 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				AA61555F306814DB00C25838 /* WatchConnectivity.framework in Frameworks */,
 			);
 		};
 		AA6154A73067198000C25838 /* Frameworks */ = {
@@ -164,11 +170,13 @@
 			files = (
 				AA6154D8306811B800C25838 /* SwiftUI.framework in Frameworks */,
 				AA6154D6306811B800C25838 /* WidgetKit.framework in Frameworks */,
+				AA6155623068150F00C25838 /* WatchConnectivity.framework in Frameworks */,
 			);
 		};
 		AA6154F3306811FB00C25838 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				AA615561306814EB00C25838 /* WatchConnectivity.framework in Frameworks */,
 			);
 		};
 		AA615502306811FC00C25838 /* Frameworks */ = {
@@ -217,6 +225,8 @@
 		AA6154D4306811B800C25838 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AA61555E306814DB00C25838 /* WatchConnectivity.framework */,
+				AA615560306814EB00C25838 /* WatchConnectivity.framework */,
 				AA6154D5306811B800C25838 /* WidgetKit.framework */,
 				AA6154D7306811B800C25838 /* SwiftUI.framework */,
 			);
