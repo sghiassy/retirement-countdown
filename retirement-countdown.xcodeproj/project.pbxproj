@@ -17,6 +17,7 @@
 		AA6155683068158C00C25838 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6154D5306811B800C25838 /* WidgetKit.framework */; };
 		AA6155693068158C00C25838 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6154D7306811B800C25838 /* SwiftUI.framework */; };
 		AA6155783068158D00C25838 /* retirement-countdownWatchWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA6155673068158C00C25838 /* retirement-countdownWatchWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA6155813068161C00C25838 /* CountdownCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA6155803068161C00C25838 /* CountdownCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -189,6 +190,7 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				AA61555F306814DB00C25838 /* WatchConnectivity.framework in Frameworks */,
+				AA6155813068161C00C25838 /* CountdownCore in Frameworks */,
 			);
 		};
 		AA6154A73067198000C25838 /* Frameworks */ = {
@@ -300,6 +302,9 @@
 				AA61549F3067197F00C25838 /* retirement-countdown */,
 			);
 			name = "retirement-countdown";
+			packageProductDependencies = (
+				AA6155803068161C00C25838 /* CountdownCore */,
+			);
 			productName = "retirement-countdown";
 			productReference = AA61549D3067197F00C25838 /* retirement-countdown.app */;
 			productType = "com.apple.product-type.application";
@@ -515,6 +520,9 @@
 			);
 			mainGroup = AA6154943067197F00C25838;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AA61557F3068161C00C25838 /* XCLocalSwiftPackageReference "CountdownCore" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AA61549E3067197F00C25838 /* Products */;
 			projectDirPath = "";
@@ -1391,6 +1399,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AA61557F3068161C00C25838 /* XCLocalSwiftPackageReference "CountdownCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = CountdownCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA6155803068161C00C25838 /* CountdownCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CountdownCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AA6154953067197F00C25838 /* Project object */;
 	validationLevel = 1;
