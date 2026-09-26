@@ -186,12 +186,14 @@ struct AccessoryRectangularView: View {
 
 // MARK: - Widget Entry View
 
+private let widgetOpenURL = URL(string: "retirementcountdown://open")!
+
 struct CountdownWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
     let entry: CountdownEntry
 
     var body: some View {
-        Link(destination: URL(string: "retirementcountdown://open")!) {
+        Group {
             switch family {
             case .systemSmall:          SystemSmallView(model: entry.model)
             case .systemMedium:         SystemMediumView(model: entry.model)
@@ -202,6 +204,7 @@ struct CountdownWidgetEntryView: View {
             default:                    SystemSmallView(model: entry.model)
             }
         }
+        .widgetURL(widgetOpenURL)
     }
 }
 
