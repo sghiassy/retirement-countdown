@@ -19,6 +19,7 @@
 		AA6155813068161C00C25838 /* CountdownCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA6155803068161C00C25838 /* CountdownCore */; };
 		AA61559130681B3600C25838 /* CountdownCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA61559030681B3600C25838 /* CountdownCore */; };
 		AA61559330681D7500C25838 /* CountdownCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA61559230681D7500C25838 /* CountdownCore */; };
+		AA61559530681E3300C25838 /* CountdownCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA61559430681E3300C25838 /* CountdownCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -210,6 +211,7 @@
 				AA6154D8306811B800C25838 /* SwiftUI.framework in Frameworks */,
 				AA6154D6306811B800C25838 /* WidgetKit.framework in Frameworks */,
 				AA6155623068150F00C25838 /* WatchConnectivity.framework in Frameworks */,
+				AA61559530681E3300C25838 /* CountdownCore in Frameworks */,
 			);
 		};
 		AA6154F3306811FB00C25838 /* Frameworks */ = {
@@ -367,6 +369,9 @@
 				AA6154D9306811B800C25838 /* retirement-countdownWidget */,
 			);
 			name = "retirement-countdownWidgetExtension";
+			packageProductDependencies = (
+				AA61559430681E3300C25838 /* CountdownCore */,
+			);
 			productName = "retirement-countdownWidgetExtension";
 			productReference = AA6154D3306811B800C25838 /* retirement-countdownWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -1426,6 +1431,11 @@
 			productName = CountdownCore;
 		};
 		AA61559230681D7500C25838 /* CountdownCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA61557F3068161C00C25838 /* XCLocalSwiftPackageReference "CountdownCore" */;
+			productName = CountdownCore;
+		};
+		AA61559430681E3300C25838 /* CountdownCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AA61557F3068161C00C25838 /* XCLocalSwiftPackageReference "CountdownCore" */;
 			productName = CountdownCore;
