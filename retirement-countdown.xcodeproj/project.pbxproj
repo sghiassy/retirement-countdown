@@ -12,12 +12,13 @@
 		AA6154E9306811B900C25838 /* retirement-countdownWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA6154D3306811B800C25838 /* retirement-countdownWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA6154F7306811FB00C25838 /* retirement-countdownWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA6154F6306811FB00C25838 /* retirement-countdownWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA61555F306814DB00C25838 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA61555E306814DB00C25838 /* WatchConnectivity.framework */; platformFilters = (ios, xros, ); };
-		AA615561306814EB00C25838 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA615560306814EB00C25838 /* WatchConnectivity.framework */; };
 		AA6155623068150F00C25838 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA61555E306814DB00C25838 /* WatchConnectivity.framework */; platformFilters = (ios, xros, ); };
 		AA6155683068158C00C25838 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6154D5306811B800C25838 /* WidgetKit.framework */; };
 		AA6155693068158C00C25838 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6154D7306811B800C25838 /* SwiftUI.framework */; };
 		AA6155783068158D00C25838 /* retirement-countdownWatchWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA6155673068158C00C25838 /* retirement-countdownWatchWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA6155813068161C00C25838 /* CountdownCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA6155803068161C00C25838 /* CountdownCore */; };
+		AA61559130681B3600C25838 /* CountdownCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA61559030681B3600C25838 /* CountdownCore */; };
+		AA61559330681D7500C25838 /* CountdownCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA61559230681D7500C25838 /* CountdownCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -214,7 +215,7 @@
 		AA6154F3306811FB00C25838 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				AA615561306814EB00C25838 /* WatchConnectivity.framework in Frameworks */,
+				AA61559330681D7500C25838 /* CountdownCore in Frameworks */,
 			);
 		};
 		AA615502306811FC00C25838 /* Frameworks */ = {
@@ -232,6 +233,7 @@
 			files = (
 				AA6155693068158C00C25838 /* SwiftUI.framework in Frameworks */,
 				AA6155683068158C00C25838 /* WidgetKit.framework in Frameworks */,
+				AA61559130681B3600C25838 /* CountdownCore in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -404,6 +406,9 @@
 				AA6154FA306811FB00C25838 /* retirement-countdownWatch Watch App */,
 			);
 			name = "retirement-countdownWatch Watch App";
+			packageProductDependencies = (
+				AA61559230681D7500C25838 /* CountdownCore */,
+			);
 			productName = "retirement-countdownWatch Watch App";
 			productReference = AA6154F6306811FB00C25838 /* retirement-countdownWatch Watch App.app */;
 			productType = "com.apple.product-type.application";
@@ -464,6 +469,9 @@
 				AA61556A3068158C00C25838 /* retirement-countdownWatchWidget */,
 			);
 			name = "retirement-countdownWatchWidgetExtension";
+			packageProductDependencies = (
+				AA61559030681B3600C25838 /* CountdownCore */,
+			);
 			productName = "retirement-countdownWatchWidgetExtension";
 			productReference = AA6155673068158C00C25838 /* retirement-countdownWatchWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -1410,6 +1418,16 @@
 /* Begin XCSwiftPackageProductDependency section */
 		AA6155803068161C00C25838 /* CountdownCore */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = CountdownCore;
+		};
+		AA61559030681B3600C25838 /* CountdownCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA61557F3068161C00C25838 /* XCLocalSwiftPackageReference "CountdownCore" */;
+			productName = CountdownCore;
+		};
+		AA61559230681D7500C25838 /* CountdownCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA61557F3068161C00C25838 /* XCLocalSwiftPackageReference "CountdownCore" */;
 			productName = CountdownCore;
 		};
 /* End XCSwiftPackageProductDependency section */

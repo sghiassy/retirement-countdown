@@ -2,13 +2,15 @@ import Foundation
 import WatchConnectivity
 import WidgetKit
 import CountdownCore
+import SwiftUI
+import Combine
 
 final class WatchSessionDelegate: NSObject, ObservableObject {
 
     static let shared = WatchSessionDelegate()
     private override init() {
-        record = WatchRetirementRepository.shared.load()
         super.init()
+        record = WatchRetirementRepository.shared.load()
     }
 
     @Published var record: RetirementRecord?
@@ -46,3 +48,4 @@ extension WatchSessionDelegate: WCSessionDelegate {
         WidgetCenter.shared.reloadAllTimelines()
     }
 }
+
