@@ -7,7 +7,7 @@ struct WidgetHelpView: View {
         DisclosureGroup("Add to your screens", isExpanded: $expanded) {
             VStack(alignment: .leading, spacing: 12) {
                 helpRow(symbol: "rectangle.stack",
-                        text: "Long-press the Home Screen → tap + → search "Retirement Countdown"")
+                        text: "Long-press the Home Screen → tap + → search \"Retirement Countdown\"")
                 helpRow(symbol: "lock.rectangle",
                         text: "Edit the Lock Screen → tap Add Widgets below the clock")
                 helpRow(symbol: "applewatch",
