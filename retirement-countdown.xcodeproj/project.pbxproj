@@ -6,6 +6,12 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AA6154D6306811B800C25838 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6154D5306811B800C25838 /* WidgetKit.framework */; };
+		AA6154D8306811B800C25838 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA6154D7306811B800C25838 /* SwiftUI.framework */; };
+		AA6154E9306811B900C25838 /* retirement-countdownWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA6154D3306811B800C25838 /* retirement-countdownWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		AA6154AB3067198000C25838 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,13 +27,45 @@
 			remoteGlobalIDString = AA61549C3067197F00C25838;
 			remoteInfo = "retirement-countdown";
 		};
+		AA6154E7306811B900C25838 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA6154953067197F00C25838 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA6154D2306811B800C25838;
+			remoteInfo = "retirement-countdownWidgetExtension";
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AA6154EA306811B900C25838 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				AA6154E9306811B900C25838 /* retirement-countdownWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		AA61549D3067197F00C25838 /* retirement-countdown.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "retirement-countdown.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA6154AA3067198000C25838 /* retirement-countdownTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "retirement-countdownTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA6154B43067198000C25838 /* retirement-countdownUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "retirement-countdownUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA6154D3306811B800C25838 /* retirement-countdownWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "retirement-countdownWidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA6154D5306811B800C25838 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		AA6154D7306811B800C25838 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AA6154ED306811B900C25838 /* Exceptions for "retirement-countdownWidget" folder in "retirement-countdownWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = AA6154D2306811B800C25838 /* retirement-countdownWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AA61549F3067197F00C25838 /* retirement-countdown */ = {
@@ -43,6 +81,14 @@
 		AA6154B73067198000C25838 /* retirement-countdownUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "retirement-countdownUITests";
+			sourceTree = "<group>";
+		};
+		AA6154D9306811B800C25838 /* retirement-countdownWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AA6154ED306811B900C25838 /* Exceptions for "retirement-countdownWidget" folder in "retirement-countdownWidgetExtension" target */,
+			);
+			path = "retirement-countdownWidget";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -63,6 +109,13 @@
 			files = (
 			);
 		};
+		AA6154D0306811B800C25838 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				AA6154D8306811B800C25838 /* SwiftUI.framework in Frameworks */,
+				AA6154D6306811B800C25838 /* WidgetKit.framework in Frameworks */,
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -72,6 +125,8 @@
 				AA61549F3067197F00C25838 /* retirement-countdown */,
 				AA6154AD3067198000C25838 /* retirement-countdownTests */,
 				AA6154B73067198000C25838 /* retirement-countdownUITests */,
+				AA6154D9306811B800C25838 /* retirement-countdownWidget */,
+				AA6154D4306811B800C25838 /* Frameworks */,
 				AA61549E3067197F00C25838 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -82,8 +137,18 @@
 				AA61549D3067197F00C25838 /* retirement-countdown.app */,
 				AA6154AA3067198000C25838 /* retirement-countdownTests.xctest */,
 				AA6154B43067198000C25838 /* retirement-countdownUITests.xctest */,
+				AA6154D3306811B800C25838 /* retirement-countdownWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		AA6154D4306811B800C25838 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AA6154D5306811B800C25838 /* WidgetKit.framework */,
+				AA6154D7306811B800C25838 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -96,8 +161,12 @@
 				AA6154993067197F00C25838 /* Sources */,
 				AA61549A3067197F00C25838 /* Frameworks */,
 				AA61549B3067197F00C25838 /* Resources */,
+				AA6154EA306811B900C25838 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
+			);
+			dependencies = (
+				AA6154E8306811B900C25838 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				AA61549F3067197F00C25838 /* retirement-countdown */,
@@ -149,6 +218,24 @@
 			productReference = AA6154B43067198000C25838 /* retirement-countdownUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		AA6154D2306811B800C25838 /* retirement-countdownWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA6154EE306811B900C25838 /* Build configuration list for PBXNativeTarget "retirement-countdownWidgetExtension" */;
+			buildPhases = (
+				AA6154CF306811B800C25838 /* Sources */,
+				AA6154D0306811B800C25838 /* Frameworks */,
+				AA6154D1306811B800C25838 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				AA6154D9306811B800C25838 /* retirement-countdownWidget */,
+			);
+			name = "retirement-countdownWidgetExtension";
+			productName = "retirement-countdownWidgetExtension";
+			productReference = AA6154D3306811B800C25838 /* retirement-countdownWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -170,6 +257,9 @@
 						CreatedOnToolsVersion = 27.0;
 						TestTargetID = AA61549C3067197F00C25838;
 					};
+					AA6154D2306811B800C25838 = {
+						CreatedOnToolsVersion = 27.0;
+					};
 				};
 			};
 			buildConfigurationList = AA6154983067197F00C25838 /* Build configuration list for PBXProject "retirement-countdown" */;
@@ -189,6 +279,7 @@
 				AA61549C3067197F00C25838 /* retirement-countdown */,
 				AA6154A93067198000C25838 /* retirement-countdownTests */,
 				AA6154B33067198000C25838 /* retirement-countdownUITests */,
+				AA6154D2306811B800C25838 /* retirement-countdownWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -205,6 +296,11 @@
 			);
 		};
 		AA6154B23067198000C25838 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		AA6154D1306811B800C25838 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -227,6 +323,11 @@
 			files = (
 			);
 		};
+		AA6154CF306811B800C25838 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -239,6 +340,11 @@
 			isa = PBXTargetDependency;
 			target = AA61549C3067197F00C25838 /* retirement-countdown */;
 			targetProxy = AA6154B53067198000C25838 /* PBXContainerItemProxy */;
+		};
+		AA6154E8306811B900C25838 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA6154D2306811B800C25838 /* retirement-countdownWidgetExtension */;
+			targetProxy = AA6154E7306811B900C25838 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -549,6 +655,71 @@
 			};
 			name = Release;
 		};
+		AA6154EB306811B900C25838 /* Debug configuration for PBXNativeTarget "retirement-countdownWidgetExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D69WEANLKK;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "retirement-countdownWidget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "retirement-countdownWidget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.retirement-countdownWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AA6154EC306811B900C25838 /* Release configuration for PBXNativeTarget "retirement-countdownWidgetExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D69WEANLKK;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "retirement-countdownWidget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "retirement-countdownWidget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.retirement-countdownWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -581,6 +752,14 @@
 			buildConfigurations = (
 				AA6154C33067198000C25838 /* Debug configuration for PBXNativeTarget "retirement-countdownUITests" */,
 				AA6154C43067198000C25838 /* Release configuration for PBXNativeTarget "retirement-countdownUITests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		AA6154EE306811B900C25838 /* Build configuration list for PBXNativeTarget "retirement-countdownWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA6154EB306811B900C25838 /* Debug configuration for PBXNativeTarget "retirement-countdownWidgetExtension" */,
+				AA6154EC306811B900C25838 /* Release configuration for PBXNativeTarget "retirement-countdownWidgetExtension" */,
 			);
 			defaultConfigurationName = Release;
 		};
