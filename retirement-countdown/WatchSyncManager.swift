@@ -23,7 +23,11 @@ final class WatchSyncManager: NSObject {
             "changeRevision": record.changeRevision,
             "schemaVersion":  record.schemaVersion
         ]
-        try? WCSession.default.updateApplicationContext(payload)
+        do {
+            try WCSession.default.updateApplicationContext(payload)
+        } catch {
+            print("WatchSyncManager: updateApplicationContext failed: \(error)")
+        }
     }
 }
 
@@ -34,12 +38,13 @@ extension WatchSyncManager: WCSessionDelegate {
         activationDidCompleteWith state: WCSessionActivationState,
         error: Error?
     ) {
-        if state == .activated { sendCurrentRecord() }
+        guard state == .activated else { return }
+        DispatchQueue.main.async { self.sendCurrentRecord() }
     }
 
     func sessionDidBecomeInactive(_ session: WCSession) {}
 
     func sessionDidDeactivate(_ session: WCSession) {
-        WCSession.default.activate()
+        DispatchQueue.main.async { WCSession.default.activate() }
     }
 }

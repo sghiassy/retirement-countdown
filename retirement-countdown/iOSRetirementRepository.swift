@@ -13,7 +13,10 @@ final class iOSRetirementRepository {
     private let schemaKey   = "schemaVersion.v1"
 
     private var defaults: UserDefaults {
-        UserDefaults(suiteName: appGroupID)!
+        guard let ud = UserDefaults(suiteName: appGroupID) else {
+            fatalError("App Group \(appGroupID) is not configured — check target entitlements")
+        }
+        return ud
     }
 
     func load() -> RetirementRecord? {
