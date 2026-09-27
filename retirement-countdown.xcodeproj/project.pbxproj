@@ -296,11 +296,13 @@
 				AA61549A3067197F00C25838 /* Frameworks */,
 				AA61549B3067197F00C25838 /* Resources */,
 				AA6154EA306811B900C25838 /* Embed Foundation Extensions */,
+				AA615518306811FC00C25838 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				AA6154E8306811B900C25838 /* PBXTargetDependency */,
+				AA6154F9306811FB00C25838 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				AA61549F3067197F00C25838 /* retirement-countdown */,
@@ -545,7 +547,6 @@
 				AA6154A93067198000C25838 /* retirement-countdownTests */,
 				AA6154B33067198000C25838 /* retirement-countdownUITests */,
 				AA6154D2306811B800C25838 /* retirement-countdownWidgetExtension */,
-				AA6154F0306811FB00C25838 /* retirement-countdownWatch */,
 				AA6154F5306811FB00C25838 /* retirement-countdownWatch Watch App */,
 				AA615504306811FC00C25838 /* retirement-countdownWatch Watch AppTests */,
 				AA61550E306811FC00C25838 /* retirement-countdownWatch Watch AppUITests */,
@@ -1074,13 +1075,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "retirement-countdownWatch";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKWatchOnly = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "ghiassy.retirement-countdown";
+				INFOPLIST_KEY_WKWatchOnly = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.retirement-countdownWatch.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = watchos;
@@ -1109,13 +1111,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "retirement-countdownWatch";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKWatchOnly = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "ghiassy.retirement-countdown";
+				INFOPLIST_KEY_WKWatchOnly = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.retirement-countdownWatch.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = watchos;
@@ -1280,7 +1283,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.retirement-countdownWatch.watchkitapp.retirement-countdownWatchWidget";
+				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.watchkitapp.retirement-countdownWatchWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1313,7 +1316,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.retirement-countdownWatch.watchkitapp.retirement-countdownWatchWidget";
+				PRODUCT_BUNDLE_IDENTIFIER = "ghiassy.retirement-countdown.watchkitapp.retirement-countdownWatchWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
