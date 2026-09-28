@@ -4,10 +4,12 @@ import CountdownCore
 struct CountdownView: View {
 
     let record: RetirementRecord
+    @Binding var mode: CountdownMode
     let onEdit: () -> Void
+    let onModeChange: (CountdownMode) -> Void
 
     private var model: CountdownDisplayModel {
-        CountdownDisplayModel.make(from: record.retirementDate)
+        CountdownDisplayModel.make(from: record.retirementDate, mode: mode)
     }
 
     var body: some View {
@@ -15,6 +17,9 @@ struct CountdownView: View {
             VStack(spacing: 16) {
                 Spacer()
                 mainContent
+                if case .counting = model {
+                    modePicker
+                }
                 Spacer()
                 WidgetHelpView()
             }
@@ -36,8 +41,8 @@ struct CountdownView: View {
             VStack(spacing: 8) {
                 Text("\(days)")
                     .font(.system(size: 96, weight: .bold, design: .rounded))
-                    .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model))
-                Text("days until retirement")
+                    .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
+                Text(mode == .workdays ? "workdays until retirement" : "days until retirement")
                     .font(.title3)
                     .foregroundStyle(.secondary)
                 Text(fullDate)
@@ -57,6 +62,18 @@ struct CountdownView: View {
         case .unconfigured:
             Text("Set your retirement date to begin.")
                 .foregroundStyle(.secondary)
+        }
+    }
+
+    private var modePicker: some View {
+        Picker("Countdown mode", selection: $mode) {
+            Text("All days").tag(CountdownMode.calendarDays)
+            Text("Workdays").tag(CountdownMode.workdays)
+        }
+        .pickerStyle(.segmented)
+        .frame(maxWidth: 300)
+        .onChange(of: mode) { _, newValue in
+            onModeChange(newValue)
         }
     }
 }

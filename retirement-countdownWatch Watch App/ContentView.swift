@@ -5,8 +5,12 @@ struct ContentView: View {
 
     @StateObject private var sessionDelegate = WatchSessionDelegate.shared
 
+    private var mode: CountdownMode {
+        WatchRetirementRepository.shared.loadMode()
+    }
+
     private var model: CountdownDisplayModel {
-        CountdownDisplayModel.make(from: sessionDelegate.record?.retirementDate)
+        CountdownDisplayModel.make(from: sessionDelegate.record?.retirementDate, mode: mode)
     }
 
     var body: some View {
@@ -17,7 +21,7 @@ struct ContentView: View {
                     .font(.system(size: 48, weight: .bold, design: .rounded))
                     .minimumScaleFactor(0.4)
                     .lineLimit(1)
-                Text("days until retirement")
+                Text(mode == .workdays ? "workdays until retirement" : "days until retirement")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -42,6 +46,6 @@ struct ContentView: View {
             }
         }
         .padding()
-        .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model))
+        .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
     }
 }

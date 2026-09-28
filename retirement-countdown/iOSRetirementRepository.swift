@@ -11,6 +11,7 @@ final class iOSRetirementRepository {
     private let dateKey     = "retirementDate.v1"
     private let revisionKey = "changeRevision.v1"
     private let schemaKey   = "schemaVersion.v1"
+    private let modeKey     = "countdownMode.v1"
 
     private var defaults: UserDefaults {
         guard let ud = UserDefaults(suiteName: appGroupID) else {
@@ -29,11 +30,27 @@ final class iOSRetirementRepository {
         return RetirementRecord(retirementDate: date, changeRevision: revision, schemaVersion: schema)
     }
 
+    func loadMode() -> CountdownMode {
+        guard
+            let raw = defaults.string(forKey: modeKey),
+            let mode = CountdownMode(rawValue: raw)
+        else { return .calendarDays }
+        return mode
+    }
+
     func save(date: RetirementDate) {
         let revision = defaults.integer(forKey: revisionKey) + 1
         defaults.set(date.isoString, forKey: dateKey)
         defaults.set(revision, forKey: revisionKey)
         defaults.set(1, forKey: schemaKey)
+        WidgetCenter.shared.reloadAllTimelines()
+        WatchSyncManager.shared.sendCurrentRecord()
+    }
+
+    func save(mode: CountdownMode) {
+        let revision = defaults.integer(forKey: revisionKey) + 1
+        defaults.set(mode.rawValue, forKey: modeKey)
+        defaults.set(revision, forKey: revisionKey)
         WidgetCenter.shared.reloadAllTimelines()
         WatchSyncManager.shared.sendCurrentRecord()
     }

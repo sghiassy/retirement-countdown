@@ -7,6 +7,7 @@ import CountdownCore
 struct CountdownEntry: TimelineEntry {
     let date: Date
     let model: CountdownDisplayModel
+    let mode: CountdownMode
 }
 
 // MARK: - Timeline Provider
@@ -15,29 +16,43 @@ struct CountdownTimelineProvider: TimelineProvider {
 
     private let appGroupID = "group.ghiassy.retirement-countdown"
     private let dateKey    = "retirementDate.v1"
+    private let modeKey    = "countdownMode.v1"
+
+    private var defaults: UserDefaults? { UserDefaults(suiteName: appGroupID) }
 
     private func loadRetirementDate() -> RetirementDate? {
         guard
-            let str  = UserDefaults(suiteName: appGroupID)?.string(forKey: dateKey),
+            let str  = defaults?.string(forKey: dateKey),
             let date = RetirementDate(string: str)
         else { return nil }
         return date
     }
 
+    private func loadMode() -> CountdownMode {
+        guard
+            let raw = defaults?.string(forKey: modeKey),
+            let m = CountdownMode(rawValue: raw)
+        else { return .calendarDays }
+        return m
+    }
+
     func placeholder(in context: Context) -> CountdownEntry {
-        CountdownEntry(date: .now, model: .counting(days: 342, fullDate: "September 1, 2027"))
+        CountdownEntry(date: .now, model: .counting(days: 342, fullDate: "September 1, 2027"), mode: .calendarDays)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (CountdownEntry) -> Void) {
-        let model = CountdownDisplayModel.make(from: loadRetirementDate())
-        completion(CountdownEntry(date: .now, model: model))
+        let mode = loadMode()
+        let model = CountdownDisplayModel.make(from: loadRetirementDate(), mode: mode)
+        completion(CountdownEntry(date: .now, model: model, mode: mode))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<CountdownEntry>) -> Void) {
         let now  = Date()
         let retirementDate = loadRetirementDate()
+        let mode = loadMode()
         var entries = [CountdownEntry(date: now,
-                                      model: CountdownDisplayModel.make(from: retirementDate, on: now))]
+                                      model: CountdownDisplayModel.make(from: retirementDate, on: now, mode: mode),
+                                      mode: mode)]
 
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = .current
@@ -45,7 +60,8 @@ struct CountdownTimelineProvider: TimelineProvider {
         for offset in 1...30 {
             guard let nextDay = cal.date(byAdding: .day, value: offset, to: startOfToday) else { continue }
             entries.append(CountdownEntry(date: nextDay,
-                                          model: CountdownDisplayModel.make(from: retirementDate, on: nextDay)))
+                                          model: CountdownDisplayModel.make(from: retirementDate, on: nextDay, mode: mode),
+                                          mode: mode))
         }
         completion(Timeline(entries: entries, policy: .atEnd))
     }
@@ -55,6 +71,7 @@ struct CountdownTimelineProvider: TimelineProvider {
 
 struct SystemSmallView: View {
     let model: CountdownDisplayModel
+    let mode: CountdownMode
     var body: some View {
         VStack(spacing: 4) {
             switch model {
@@ -63,7 +80,7 @@ struct SystemSmallView: View {
                     .font(.system(size: 52, weight: .bold, design: .rounded))
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)
-                Text("days")
+                Text(mode == .workdays ? "workdays" : "days")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             case .today:
@@ -81,15 +98,16 @@ struct SystemSmallView: View {
             }
         }
         .padding(8)
-        .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model))
+        .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
     }
 }
 
 struct SystemMediumView: View {
     let model: CountdownDisplayModel
+    let mode: CountdownMode
     var body: some View {
         HStack {
-            SystemSmallView(model: model)
+            SystemSmallView(model: model, mode: mode)
             if case .counting(_, let fullDate) = model {
                 Spacer()
                 Text(fullDate)
@@ -100,16 +118,17 @@ struct SystemMediumView: View {
             }
         }
         .padding()
-        .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model))
+        .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
     }
 }
 
 struct SystemLargeView: View {
     let model: CountdownDisplayModel
+    let mode: CountdownMode
     var body: some View {
         VStack(spacing: 12) {
             Spacer()
-            SystemSmallView(model: model)
+            SystemSmallView(model: model, mode: mode)
             if case .counting(_, let fullDate) = model {
                 Text(fullDate)
                     .font(.callout)
@@ -117,7 +136,7 @@ struct SystemLargeView: View {
             }
             Spacer()
         }
-        .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model))
+        .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
     }
 }
 
@@ -125,18 +144,21 @@ struct SystemLargeView: View {
 
 struct AccessoryInlineView: View {
     let model: CountdownDisplayModel
+    let mode: CountdownMode
     var body: some View {
         switch model {
-        case .counting(let days, _): Text("Retire in \(days)d")
-        case .today:                 Text("Today is the day")
-        case .retired:               Text("Retired")
-        case .unconfigured:          Text("Set date on iPhone")
+        case .counting(let days, _):
+            Text(mode == .workdays ? "Retire in \(days) workdays" : "Retire in \(days)d")
+        case .today:        Text("Today is the day")
+        case .retired:      Text("Retired")
+        case .unconfigured: Text("Set date on iPhone")
         }
     }
 }
 
 struct AccessoryCircularView: View {
     let model: CountdownDisplayModel
+    let mode: CountdownMode
     var body: some View {
         switch model {
         case .counting(let days, _):
@@ -145,10 +167,10 @@ struct AccessoryCircularView: View {
                     .font(.system(.headline, design: .rounded).bold())
                     .minimumScaleFactor(0.4)
                     .lineLimit(1)
-                Text("d")
+                Text(mode == .workdays ? "wd" : "d")
                     .font(.caption2)
             }
-            .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model))
+            .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
         case .today:
             Image(systemName: "party.popper")
         case .retired:
@@ -161,6 +183,7 @@ struct AccessoryCircularView: View {
 
 struct AccessoryRectangularView: View {
     let model: CountdownDisplayModel
+    let mode: CountdownMode
     var body: some View {
         switch model {
         case .counting(let days, _):
@@ -169,11 +192,11 @@ struct AccessoryRectangularView: View {
                     .font(.system(.title2, design: .rounded).bold())
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)
-                Text("until retirement")
+                Text(mode == .workdays ? "workdays to retire" : "until retirement")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model))
+            .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
         case .today:
             Text("Today is the day").font(.headline)
         case .retired:
@@ -195,13 +218,13 @@ struct CountdownWidgetEntryView: View {
     var body: some View {
         Group {
             switch family {
-            case .systemSmall:          SystemSmallView(model: entry.model)
-            case .systemMedium:         SystemMediumView(model: entry.model)
-            case .systemLarge:          SystemLargeView(model: entry.model)
-            case .accessoryInline:      AccessoryInlineView(model: entry.model)
-            case .accessoryCircular:    AccessoryCircularView(model: entry.model)
-            case .accessoryRectangular: AccessoryRectangularView(model: entry.model)
-            default:                    SystemSmallView(model: entry.model)
+            case .systemSmall:          SystemSmallView(model: entry.model, mode: entry.mode)
+            case .systemMedium:         SystemMediumView(model: entry.model, mode: entry.mode)
+            case .systemLarge:          SystemLargeView(model: entry.model, mode: entry.mode)
+            case .accessoryInline:      AccessoryInlineView(model: entry.model, mode: entry.mode)
+            case .accessoryCircular:    AccessoryCircularView(model: entry.model, mode: entry.mode)
+            case .accessoryRectangular: AccessoryRectangularView(model: entry.model, mode: entry.mode)
+            default:                    SystemSmallView(model: entry.model, mode: entry.mode)
             }
         }
         .widgetURL(widgetOpenURL)
