@@ -6,11 +6,12 @@ final class WatchRetirementRepository {
     static let shared = WatchRetirementRepository()
     private init() {}
 
-    private let appGroupID  = "group.ghiassy.retirement-countdown"
-    private let dateKey     = "retirementDate.v1"
-    private let revisionKey = "changeRevision.v1"
-    private let schemaKey   = "schemaVersion.v1"
-    private let modeKey     = "countdownMode.v1"
+    private let appGroupID      = "group.ghiassy.retirement-countdown"
+    private let dateKey         = "retirementDate.v1"
+    private let revisionKey     = "changeRevision.v1"
+    private let schemaKey       = "schemaVersion.v1"
+    private let preferencesKey  = "preferences.v1"
+    private let legacyModeKey   = "countdownMode.v1"
 
     private var defaults: UserDefaults {
         guard let ud = UserDefaults(suiteName: appGroupID) else {
@@ -29,12 +30,20 @@ final class WatchRetirementRepository {
         return RetirementRecord(retirementDate: date, changeRevision: revision, schemaVersion: schema)
     }
 
-    func loadMode() -> CountdownMode {
-        guard
-            let raw = defaults.string(forKey: modeKey),
-            let mode = CountdownMode(rawValue: raw)
-        else { return .calendarDays }
-        return mode
+    func loadPreferences() -> CountdownPreferences {
+        if let json = defaults.string(forKey: preferencesKey),
+           let prefs = CountdownPreferences(json: json) {
+            return prefs
+        }
+        if let legacyMode = defaults.string(forKey: legacyModeKey),
+           let mode = CountdownMode(rawValue: legacyMode) {
+            let migrated = CountdownPreferences(mode: mode)
+            if let json = migrated.encodedJSON() {
+                defaults.set(json, forKey: preferencesKey)
+            }
+            return migrated
+        }
+        return CountdownPreferences()
     }
 
     /// Applies an incoming WCSession transfer only if its revision is newer than what's stored.
@@ -56,9 +65,18 @@ final class WatchRetirementRepository {
         defaults.set(incomingRevision, forKey: revisionKey)
         defaults.set(schema, forKey: schemaKey)
 
-        if let modeRaw = payload["countdownMode"] as? String,
-           CountdownMode(rawValue: modeRaw) != nil {
-            defaults.set(modeRaw, forKey: modeKey)
+        // v2+ payload: full preferences JSON
+        if let prefsJSON = payload["preferencesJSON"] as? String,
+           !prefsJSON.isEmpty,
+           CountdownPreferences(json: prefsJSON) != nil {
+            defaults.set(prefsJSON, forKey: preferencesKey)
+        } else if let modeRaw = payload["countdownMode"] as? String,
+                  let mode = CountdownMode(rawValue: modeRaw) {
+            // Legacy v1 payload: construct preferences with just the mode
+            let migrated = CountdownPreferences(mode: mode)
+            if let json = migrated.encodedJSON() {
+                defaults.set(json, forKey: preferencesKey)
+            }
         }
 
         return RetirementRecord(retirementDate: date, changeRevision: incomingRevision, schemaVersion: schema)

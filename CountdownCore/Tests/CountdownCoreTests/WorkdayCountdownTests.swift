@@ -11,52 +11,52 @@ final class WorkdayCountdownTests: XCTestCase {
         return cal.date(from: DateComponents(year: y, month: m, day: d, hour: hour))!
     }
 
+    private var workdaysPrefs: CountdownPreferences { CountdownPreferences(mode: .workdays) }
+    private var calendarPrefs: CountdownPreferences { CountdownPreferences(mode: .calendarDays) }
+
     // MARK: - Basic mode-agnostic state transitions
 
     func testStateTodayWorksInWorkdayMode() {
         let retirement = RetirementDate(string: "2026-09-25")!
         let now = utcDate(2026, 9, 25)
-        XCTAssertEqual(CountdownCalculator.state(for: retirement, on: now, in: utc, mode: .workdays), .today)
+        XCTAssertEqual(CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: workdaysPrefs), .today)
     }
 
     func testStateRetiredWorksInWorkdayMode() {
         let retirement = RetirementDate(string: "2026-09-24")!
         let now = utcDate(2026, 9, 25)
-        XCTAssertEqual(CountdownCalculator.state(for: retirement, on: now, in: utc, mode: .workdays), .retired)
+        XCTAssertEqual(CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: workdaysPrefs), .retired)
     }
 
     func testStateUnconfiguredWorksInWorkdayMode() {
-        XCTAssertEqual(CountdownCalculator.state(for: nil, on: Date(), in: utc, mode: .workdays), .unconfigured)
+        XCTAssertEqual(CountdownCalculator.state(for: nil, on: Date(), in: utc, preferences: workdaysPrefs), .unconfigured)
     }
 
     // MARK: - Simple workday counting
 
     func testFridayToMondayIsOneWorkday() {
-        // Fri 2026-09-25 → Mon 2026-09-28 = 1 workday (Monday), excluding today
         let retirement = RetirementDate(string: "2026-09-28")!
         let now = utcDate(2026, 9, 25)
         XCTAssertEqual(
-            CountdownCalculator.state(for: retirement, on: now, in: utc, mode: .workdays),
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: workdaysPrefs),
             .counting(days: 1)
         )
     }
 
     func testMondayToFridayIsFourWorkdays() {
-        // Mon 2026-09-28 → Fri 2026-10-02 = Tue, Wed, Thu, Fri = 4 workdays
         let retirement = RetirementDate(string: "2026-10-02")!
         let now = utcDate(2026, 9, 28)
         XCTAssertEqual(
-            CountdownCalculator.state(for: retirement, on: now, in: utc, mode: .workdays),
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: workdaysPrefs),
             .counting(days: 4)
         )
     }
 
     func testFridayToSaturdayIsZeroWorkdays() {
-        // Fri 2026-09-25 → Sat 2026-09-26 = 0 workdays (Sat is a weekend)
         let retirement = RetirementDate(string: "2026-09-26")!
         let now = utcDate(2026, 9, 25)
         XCTAssertEqual(
-            CountdownCalculator.state(for: retirement, on: now, in: utc, mode: .workdays),
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: workdaysPrefs),
             .counting(days: 0)
         )
     }
@@ -64,41 +64,35 @@ final class WorkdayCountdownTests: XCTestCase {
     // MARK: - Holidays excluded
 
     func testWorkdaysExcludeThanksgiving() {
-        // Wed 2026-11-25 → Fri 2026-11-27 = Thu Nov 26 (Thanksgiving), Fri Nov 27
-        // Thanksgiving is excluded, so 1 workday (Fri).
         let retirement = RetirementDate(string: "2026-11-27")!
         let now = utcDate(2026, 11, 25)
         XCTAssertEqual(
-            CountdownCalculator.state(for: retirement, on: now, in: utc, mode: .workdays),
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: workdaysPrefs),
             .counting(days: 1)
         )
     }
 
     func testWorkdaysExcludeChristmasObserved() {
-        // Dec 25 2027 is a Saturday — federal offices closed on Fri Dec 24.
-        // Thu Dec 23 2027 → Mon Dec 27 2027: Fri (Dec 24 observed Christmas, excluded),
-        // Sat/Sun (weekend), Mon Dec 27 = 1 workday.
         let retirement = RetirementDate(string: "2027-12-27")!
         let now = utcDate(2027, 12, 23)
         XCTAssertEqual(
-            CountdownCalculator.state(for: retirement, on: now, in: utc, mode: .workdays),
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: workdaysPrefs),
             .counting(days: 1)
         )
     }
 
-    // MARK: - Calendar-days mode still works after refactor
+    // MARK: - Calendar-days mode still works
 
     func testCalendarDaysModeStillCountsAllDays() {
-        // Fri 2026-09-25 → Fri 2026-10-02 = 7 calendar days
         let retirement = RetirementDate(string: "2026-10-02")!
         let now = utcDate(2026, 9, 25)
         XCTAssertEqual(
-            CountdownCalculator.state(for: retirement, on: now, in: utc, mode: .calendarDays),
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: calendarPrefs),
             .counting(days: 7)
         )
     }
 
-    func testDefaultModeIsCalendarDays() {
+    func testDefaultPreferencesIsCalendarDays() {
         let retirement = RetirementDate(string: "2026-10-02")!
         let now = utcDate(2026, 9, 25)
         XCTAssertEqual(
@@ -107,19 +101,116 @@ final class WorkdayCountdownTests: XCTestCase {
         )
     }
 
-    // MARK: - Longer horizons
-
     func testWorkdaysOverAYear() {
-        // Sep 25 2026 (Fri) → Sep 24 2027 (Fri) - approximately 250 workdays minus ~11 holidays
-        // Total calendar days = 364. Weeks ≈ 52. Workdays ≈ 52 * 5 = 260 minus weekends already excluded.
-        // Actual: count Mon-Fri days from Sep 26 2026 through Sep 24 2027, minus federal holidays in range.
         let retirement = RetirementDate(string: "2027-09-24")!
         let now = utcDate(2026, 9, 25)
-        guard case .counting(let workdays) = CountdownCalculator.state(for: retirement, on: now, in: utc, mode: .workdays) else {
+        guard case .counting(let workdays) = CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: workdaysPrefs) else {
             return XCTFail("Expected counting state")
         }
-        // Sanity range: not less than 240 and not more than 260 for a year of workdays.
         XCTAssertGreaterThan(workdays, 240)
         XCTAssertLessThan(workdays, 260)
+    }
+
+    // MARK: - PTO offset
+
+    func testPTOReducesWorkdayCount() {
+        // Mon → Fri = 4 workdays; PTO 2 → 2 workdays remaining.
+        let retirement = RetirementDate(string: "2026-10-02")!
+        let now = utcDate(2026, 9, 28)
+        let prefs = CountdownPreferences(mode: .workdays, ptoDays: 2)
+        XCTAssertEqual(
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: prefs),
+            .counting(days: 2)
+        )
+    }
+
+    func testPTOClampsAtZero() {
+        // 4 workdays, PTO 10 → clamp at 0.
+        let retirement = RetirementDate(string: "2026-10-02")!
+        let now = utcDate(2026, 9, 28)
+        let prefs = CountdownPreferences(mode: .workdays, ptoDays: 10)
+        XCTAssertEqual(
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: prefs),
+            .counting(days: 0)
+        )
+    }
+
+    func testPTOIgnoredInCalendarDaysMode() {
+        // 7 calendar days, PTO 3 → still 7.
+        let retirement = RetirementDate(string: "2026-10-02")!
+        let now = utcDate(2026, 9, 25)
+        let prefs = CountdownPreferences(mode: .calendarDays, ptoDays: 3)
+        XCTAssertEqual(
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: prefs),
+            .counting(days: 7)
+        )
+    }
+
+    // MARK: - Disabled federal holidays
+
+    func testDisablingThanksgivingAddsItBackAsAWorkday() {
+        // Same window as testWorkdaysExcludeThanksgiving (1 workday with Thanksgiving excluded).
+        // Disable Thanksgiving → both Thu and Fri count = 2 workdays.
+        let retirement = RetirementDate(string: "2026-11-27")!
+        let now = utcDate(2026, 11, 25)
+        let prefs = CountdownPreferences(mode: .workdays, disabledFederalHolidays: [.thanksgiving])
+        XCTAssertEqual(
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: prefs),
+            .counting(days: 2)
+        )
+    }
+
+    // MARK: - Custom holidays
+
+    func testCustomHolidayExcludedFromCount() {
+        // Mon → Fri = 4 workdays. Add Wed as a custom holiday → 3 workdays.
+        let retirement = RetirementDate(string: "2026-10-02")!
+        let now = utcDate(2026, 9, 28)
+        let customDate = RetirementDate(string: "2026-09-30")! // Wed
+        let prefs = CountdownPreferences(
+            mode: .workdays,
+            customHolidays: [Holiday(date: customDate, label: "Company Day")]
+        )
+        XCTAssertEqual(
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: prefs),
+            .counting(days: 3)
+        )
+    }
+
+    func testCustomHolidayDeduplicatesWithFederal() {
+        // 2026-11-26 is Thanksgiving (already excluded). Adding it as a custom holiday is a no-op.
+        let retirement = RetirementDate(string: "2026-11-27")!
+        let now = utcDate(2026, 11, 25)
+        let dup = RetirementDate(string: "2026-11-26")!
+        let prefs = CountdownPreferences(
+            mode: .workdays,
+            customHolidays: [Holiday(date: dup, label: nil)]
+        )
+        XCTAssertEqual(
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: prefs),
+            .counting(days: 1)
+        )
+    }
+
+    // MARK: - Hybrid test from the plan
+
+    func testHybridThanksgivingOffCustomHolidayPlusPTO() {
+        // Window: Fri 2026-11-20 → Fri 2026-11-27 (one calendar week + 1 day)
+        // Mon-Fri in that window: Mon Nov 23, Tue Nov 24, Wed Nov 25, Thu Nov 26, Fri Nov 27 = 5 workdays
+        // Disable Thanksgiving (Thu Nov 26 counted) + custom holiday Mon Nov 23 (excluded) + 2 PTO:
+        // 5 workdays - 1 (custom Mon) - 2 (PTO) = 2
+        let retirement = RetirementDate(string: "2026-11-27")!
+        let now = utcDate(2026, 11, 20)
+        let custom = RetirementDate(string: "2026-11-23")!
+        let prefs = CountdownPreferences(
+            mode: .workdays,
+            ptoDays: 2,
+            disabledFederalHolidays: [.thanksgiving],
+            customHolidays: [Holiday(date: custom, label: "Pre-holiday day off")]
+        )
+        XCTAssertEqual(
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: prefs),
+            .counting(days: 2)
+        )
     }
 }

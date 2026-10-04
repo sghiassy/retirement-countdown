@@ -7,16 +7,17 @@ import CountdownCore
 struct WatchCountdownEntry: TimelineEntry {
     let date: Date
     let model: CountdownDisplayModel
-    let mode: CountdownMode
+    let preferences: CountdownPreferences
 }
 
 // MARK: - Timeline Provider
 
 struct WatchCountdownTimelineProvider: TimelineProvider {
 
-    private let appGroupID = "group.ghiassy.retirement-countdown"
-    private let dateKey    = "retirementDate.v1"
-    private let modeKey    = "countdownMode.v1"
+    private let appGroupID     = "group.ghiassy.retirement-countdown"
+    private let dateKey        = "retirementDate.v1"
+    private let preferencesKey = "preferences.v1"
+    private let legacyModeKey  = "countdownMode.v1"
 
     private var defaults: UserDefaults? { UserDefaults(suiteName: appGroupID) }
 
@@ -28,40 +29,52 @@ struct WatchCountdownTimelineProvider: TimelineProvider {
         return date
     }
 
-    private func loadMode() -> CountdownMode {
-        guard
-            let raw = defaults?.string(forKey: modeKey),
-            let m = CountdownMode(rawValue: raw)
-        else { return .calendarDays }
-        return m
+    private func loadPreferences() -> CountdownPreferences {
+        if let json = defaults?.string(forKey: preferencesKey),
+           let prefs = CountdownPreferences(json: json) {
+            return prefs
+        }
+        if let legacyMode = defaults?.string(forKey: legacyModeKey),
+           let mode = CountdownMode(rawValue: legacyMode) {
+            return CountdownPreferences(mode: mode)
+        }
+        return CountdownPreferences()
     }
 
     func placeholder(in context: Context) -> WatchCountdownEntry {
-        WatchCountdownEntry(date: .now, model: .counting(days: 342, fullDate: "September 1, 2027"), mode: .calendarDays)
+        WatchCountdownEntry(
+            date: .now,
+            model: .counting(days: 342, fullDate: "September 1, 2027"),
+            preferences: CountdownPreferences()
+        )
     }
 
     func getSnapshot(in context: Context, completion: @escaping (WatchCountdownEntry) -> Void) {
-        let mode = loadMode()
-        let model = CountdownDisplayModel.make(from: loadRetirementDate(), mode: mode)
-        completion(WatchCountdownEntry(date: .now, model: model, mode: mode))
+        let prefs = loadPreferences()
+        let model = CountdownDisplayModel.make(from: loadRetirementDate(), preferences: prefs)
+        completion(WatchCountdownEntry(date: .now, model: model, preferences: prefs))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<WatchCountdownEntry>) -> Void) {
         let now  = Date()
         let retirementDate = loadRetirementDate()
-        let mode = loadMode()
-        var entries = [WatchCountdownEntry(date: now,
-                                           model: CountdownDisplayModel.make(from: retirementDate, on: now, mode: mode),
-                                           mode: mode)]
+        let prefs = loadPreferences()
+        var entries = [WatchCountdownEntry(
+            date: now,
+            model: CountdownDisplayModel.make(from: retirementDate, on: now, preferences: prefs),
+            preferences: prefs
+        )]
 
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = .current
         let startOfToday = cal.startOfDay(for: now)
         for offset in 1...7 {
             guard let nextDay = cal.date(byAdding: .day, value: offset, to: startOfToday) else { continue }
-            entries.append(WatchCountdownEntry(date: nextDay,
-                                               model: CountdownDisplayModel.make(from: retirementDate, on: nextDay, mode: mode),
-                                               mode: mode))
+            entries.append(WatchCountdownEntry(
+                date: nextDay,
+                model: CountdownDisplayModel.make(from: retirementDate, on: nextDay, preferences: prefs),
+                preferences: prefs
+            ))
         }
         completion(Timeline(entries: entries, policy: .atEnd))
     }
@@ -71,11 +84,11 @@ struct WatchCountdownTimelineProvider: TimelineProvider {
 
 struct WatchInlineView: View {
     let model: CountdownDisplayModel
-    let mode: CountdownMode
+    let preferences: CountdownPreferences
     var body: some View {
         switch model {
         case .counting(let days, _):
-            Text(mode == .workdays ? "\(days) workdays" : "\(days)d to retire")
+            Text(preferences.mode == .workdays ? "\(days) workdays" : "\(days)d to retire")
         case .today:        Text("Retire today!")
         case .retired:      Text("Retired")
         case .unconfigured: Text("Set date")
@@ -85,7 +98,7 @@ struct WatchInlineView: View {
 
 struct WatchCircularView: View {
     let model: CountdownDisplayModel
-    let mode: CountdownMode
+    let preferences: CountdownPreferences
     var body: some View {
         switch model {
         case .counting(let days, _):
@@ -94,10 +107,10 @@ struct WatchCircularView: View {
                     .font(.system(.headline, design: .rounded).bold())
                     .minimumScaleFactor(0.4)
                     .lineLimit(1)
-                Text(mode == .workdays ? "wd" : "d")
+                Text(preferences.mode == .workdays ? "wd" : "d")
                     .font(.caption2)
             }
-            .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
+            .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, preferences: preferences))
         case .today:
             Image(systemName: "party.popper")
         case .retired:
@@ -110,7 +123,7 @@ struct WatchCircularView: View {
 
 struct WatchRectangularView: View {
     let model: CountdownDisplayModel
-    let mode: CountdownMode
+    let preferences: CountdownPreferences
     var body: some View {
         switch model {
         case .counting(let days, _):
@@ -119,11 +132,11 @@ struct WatchRectangularView: View {
                     .font(.system(.title3, design: .rounded).bold())
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)
-                Text(mode == .workdays ? "workdays to retire" : "until retirement")
+                Text(preferences.mode == .workdays ? "workdays to retire" : "until retirement")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
-            .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
+            .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, preferences: preferences))
         case .today:
             Text("Today is the day").font(.caption)
         case .retired:
@@ -136,7 +149,7 @@ struct WatchRectangularView: View {
 
 struct WatchCornerView: View {
     let model: CountdownDisplayModel
-    let mode: CountdownMode
+    let preferences: CountdownPreferences
     var body: some View {
         switch model {
         case .counting(let days, _):
@@ -144,8 +157,8 @@ struct WatchCornerView: View {
                 .font(.system(.body, design: .rounded).bold())
                 .minimumScaleFactor(0.4)
                 .lineLimit(1)
-                .widgetLabel(mode == .workdays ? "workdays to retire" : "days to retire")
-                .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
+                .widgetLabel(preferences.mode == .workdays ? "workdays to retire" : "days to retire")
+                .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, preferences: preferences))
         case .today:
             Image(systemName: "party.popper")
                 .widgetLabel("Today!")
@@ -167,11 +180,11 @@ struct WatchCountdownWidgetEntryView: View {
 
     var body: some View {
         switch family {
-        case .accessoryInline:      WatchInlineView(model: entry.model, mode: entry.mode)
-        case .accessoryCircular:    WatchCircularView(model: entry.model, mode: entry.mode)
-        case .accessoryRectangular: WatchRectangularView(model: entry.model, mode: entry.mode)
-        case .accessoryCorner:      WatchCornerView(model: entry.model, mode: entry.mode)
-        default:                    WatchCircularView(model: entry.model, mode: entry.mode)
+        case .accessoryInline:      WatchInlineView(model: entry.model, preferences: entry.preferences)
+        case .accessoryCircular:    WatchCircularView(model: entry.model, preferences: entry.preferences)
+        case .accessoryRectangular: WatchRectangularView(model: entry.model, preferences: entry.preferences)
+        case .accessoryCorner:      WatchCornerView(model: entry.model, preferences: entry.preferences)
+        default:                    WatchCircularView(model: entry.model, preferences: entry.preferences)
         }
     }
 }

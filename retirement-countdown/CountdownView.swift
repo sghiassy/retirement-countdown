@@ -4,12 +4,14 @@ import CountdownCore
 struct CountdownView: View {
 
     let record: RetirementRecord
-    @Binding var mode: CountdownMode
+    @Binding var preferences: CountdownPreferences
     let onEdit: () -> Void
-    let onModeChange: (CountdownMode) -> Void
+    let onPreferencesChange: (CountdownPreferences) -> Void
+
+    @State private var showingSettings = false
 
     private var model: CountdownDisplayModel {
-        CountdownDisplayModel.make(from: record.retirementDate, mode: mode)
+        CountdownDisplayModel.make(from: record.retirementDate, preferences: preferences)
     }
 
     var body: some View {
@@ -27,9 +29,20 @@ struct CountdownView: View {
             .navigationTitle("Retirement Countdown")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Image(systemName: "gear")
+                    }
+                    .accessibilityLabel("Settings")
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Edit", action: onEdit)
                 }
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView(preferences: $preferences, onChange: onPreferencesChange)
             }
         }
     }
@@ -41,8 +54,8 @@ struct CountdownView: View {
             VStack(spacing: 8) {
                 Text("\(days)")
                     .font(.system(size: 96, weight: .bold, design: .rounded))
-                    .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, mode: mode))
-                Text(mode == .workdays ? "workdays until retirement" : "days until retirement")
+                    .accessibilityLabel(CountdownFormatter.accessibilityLabel(for: model, preferences: preferences))
+                Text(preferences.mode == .workdays ? "workdays until retirement" : "days until retirement")
                     .font(.title3)
                     .foregroundStyle(.secondary)
                 Text(fullDate)
@@ -66,14 +79,17 @@ struct CountdownView: View {
     }
 
     private var modePicker: some View {
-        Picker("Countdown mode", selection: $mode) {
+        Picker("Countdown mode", selection: Binding(
+            get: { preferences.mode },
+            set: { newValue in
+                preferences.mode = newValue
+                onPreferencesChange(preferences)
+            }
+        )) {
             Text("All days").tag(CountdownMode.calendarDays)
             Text("Workdays").tag(CountdownMode.workdays)
         }
         .pickerStyle(.segmented)
         .frame(maxWidth: 300)
-        .onChange(of: mode) { _, newValue in
-            onModeChange(newValue)
-        }
     }
 }

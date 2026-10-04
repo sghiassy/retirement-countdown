@@ -4,7 +4,7 @@ import CountdownCore
 struct ContentView: View {
 
     @State private var record: RetirementRecord? = iOSRetirementRepository.shared.load()
-    @State private var mode: CountdownMode = iOSRetirementRepository.shared.loadMode()
+    @State private var preferences: CountdownPreferences = iOSRetirementRepository.shared.loadPreferences()
     @State private var isEditing = false
 
     var body: some View {
@@ -12,10 +12,10 @@ struct ContentView: View {
             if let record, !isEditing {
                 CountdownView(
                     record: record,
-                    mode: $mode,
+                    preferences: $preferences,
                     onEdit: { isEditing = true },
-                    onModeChange: { newMode in
-                        iOSRetirementRepository.shared.save(mode: newMode)
+                    onPreferencesChange: { newPrefs in
+                        iOSRetirementRepository.shared.save(preferences: newPrefs)
                     }
                 )
             } else {
@@ -28,7 +28,7 @@ struct ContentView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             record = iOSRetirementRepository.shared.load()
-            mode = iOSRetirementRepository.shared.loadMode()
+            preferences = iOSRetirementRepository.shared.loadPreferences()
         }
     }
 }

@@ -6,51 +6,49 @@ import Foundation
 public enum USFederalHolidays {
 
     /// Set of observed federal holiday dates falling on weekdays for `year`.
+    /// Only holidays in `enabled` are included — defaults to all 11.
     /// Weekend-date holidays are shifted to the observed weekday (Sat→Fri, Sun→Mon).
     /// Juneteenth is only included from 2021 onward (when it was established).
-    public static func observedDates(inYear year: Int, calendar: Calendar) -> Set<Date> {
+    public static func observedDates(
+        inYear year: Int,
+        calendar: Calendar,
+        enabled: Set<FederalHoliday> = Set(FederalHoliday.allCases)
+    ) -> Set<Date> {
         var cal = calendar
         cal.timeZone = calendar.timeZone
 
         var dates = Set<Date>()
-
-        // Fixed-date holidays — apply observed rule if they fall on Sat/Sun.
-        var fixed: [(month: Int, day: Int)] = [
-            (1, 1),     // New Year's Day
-            (7, 4),     // Independence Day
-            (11, 11),   // Veterans Day
-            (12, 25),   // Christmas Day
-        ]
-        if year >= 2021 { fixed.append((6, 19)) } // Juneteenth
-        for h in fixed {
-            if let d = observedDate(year: year, month: h.month, day: h.day, calendar: cal) {
-                dates.insert(d)
-            }
+        for holiday in enabled {
+            guard let d = date(for: holiday, year: year, calendar: cal) else { continue }
+            dates.insert(d)
         }
-
-        // Nth-weekday holidays — always fall on a weekday, no observed rule needed.
-        // ordinal: positive N = Nth occurrence, -1 = last occurrence.
-        // weekday: 1=Sun, 2=Mon, ..., 5=Thu, 7=Sat.
-        let nth: [(month: Int, weekday: Int, ordinal: Int)] = [
-            (1, 2, 3),    // MLK Day        — 3rd Monday of January
-            (2, 2, 3),    // Presidents Day — 3rd Monday of February
-            (5, 2, -1),   // Memorial Day   — last Monday of May
-            (9, 2, 1),    // Labor Day      — 1st Monday of September
-            (10, 2, 2),   // Columbus Day   — 2nd Monday of October
-            (11, 5, 4),   // Thanksgiving   — 4th Thursday of November
-        ]
-        for h in nth {
-            if let d = nthWeekday(year: year, month: h.month, weekday: h.weekday, ordinal: h.ordinal, calendar: cal) {
-                dates.insert(d)
-            }
-        }
-
         return dates
+    }
+
+    /// Returns the observed date for a given federal holiday in a given year, honoring
+    /// weekend-shift rules for fixed-date holidays, and skipping Juneteenth pre-2021.
+    private static func date(for holiday: FederalHoliday, year: Int, calendar: Calendar) -> Date? {
+        switch holiday {
+        case .newYearsDay:            return observedFixed(year: year, month: 1,  day: 1,  calendar: calendar)
+        case .independenceDay:        return observedFixed(year: year, month: 7,  day: 4,  calendar: calendar)
+        case .veteransDay:            return observedFixed(year: year, month: 11, day: 11, calendar: calendar)
+        case .christmas:              return observedFixed(year: year, month: 12, day: 25, calendar: calendar)
+        case .juneteenth:
+            guard year >= 2021 else { return nil }
+            return observedFixed(year: year, month: 6, day: 19, calendar: calendar)
+
+        case .martinLutherKingJrDay:  return nthWeekday(year: year, month: 1,  weekday: 2, ordinal: 3,  calendar: calendar)
+        case .presidentsDay:          return nthWeekday(year: year, month: 2,  weekday: 2, ordinal: 3,  calendar: calendar)
+        case .memorialDay:            return nthWeekday(year: year, month: 5,  weekday: 2, ordinal: -1, calendar: calendar)
+        case .laborDay:               return nthWeekday(year: year, month: 9,  weekday: 2, ordinal: 1,  calendar: calendar)
+        case .columbusDay:            return nthWeekday(year: year, month: 10, weekday: 2, ordinal: 2,  calendar: calendar)
+        case .thanksgiving:           return nthWeekday(year: year, month: 11, weekday: 5, ordinal: 4,  calendar: calendar)
+        }
     }
 
     /// Returns the observed weekday date for a fixed-date holiday.
     /// If the date lands on Saturday, returns the Friday before; on Sunday, the Monday after.
-    private static func observedDate(year: Int, month: Int, day: Int, calendar: Calendar) -> Date? {
+    private static func observedFixed(year: Int, month: Int, day: Int, calendar: Calendar) -> Date? {
         let comps = DateComponents(year: year, month: month, day: day)
         guard let actual = calendar.date(from: comps) else { return nil }
         let weekday = calendar.component(.weekday, from: actual)

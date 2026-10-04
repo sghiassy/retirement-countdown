@@ -84,4 +84,34 @@ final class USFederalHolidaysTests: XCTestCase {
         let holidays = USFederalHolidays.observedDates(inYear: 2026, calendar: cal)
         XCTAssertTrue(holidays.contains(date(2026, 9, 7)))
     }
+
+    // MARK: - Enabled filter
+
+    func testEmptyEnabledReturnsNoHolidays() {
+        let holidays = USFederalHolidays.observedDates(inYear: 2026, calendar: cal, enabled: [])
+        XCTAssertTrue(holidays.isEmpty)
+    }
+
+    func testEnabledFilterReturnsOnlyRequestedHolidays() {
+        let holidays = USFederalHolidays.observedDates(
+            inYear: 2026,
+            calendar: cal,
+            enabled: [.thanksgiving, .christmas]
+        )
+        XCTAssertEqual(holidays.count, 2)
+        XCTAssertTrue(holidays.contains(date(2026, 11, 26))) // Thanksgiving
+        XCTAssertTrue(holidays.contains(date(2026, 12, 25))) // Christmas (Fri)
+    }
+
+    func testDisablingColumbusDayExcludesIt() {
+        let allExceptColumbus = Set(FederalHoliday.allCases).subtracting([.columbusDay])
+        let holidays = USFederalHolidays.observedDates(
+            inYear: 2026,
+            calendar: cal,
+            enabled: allExceptColumbus
+        )
+        XCTAssertEqual(holidays.count, 10)
+        // Columbus Day 2026 = Oct 12 (2nd Monday of October)
+        XCTAssertFalse(holidays.contains(date(2026, 10, 12)))
+    }
 }

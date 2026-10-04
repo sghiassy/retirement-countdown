@@ -38,14 +38,15 @@ final class WatchSyncManager: NSObject {
             log.error("sendCurrentRecord: no record in repository (nothing to send)")
             return
         }
-        let mode = iOSRetirementRepository.shared.loadMode()
+        let prefs = iOSRetirementRepository.shared.loadPreferences()
+        let prefsJSON = prefs.encodedJSON() ?? ""
         let payload: [String: Any] = [
-            "retirementDate": record.retirementDate?.isoString ?? "",
-            "changeRevision": record.changeRevision,
-            "schemaVersion":  record.schemaVersion,
-            "countdownMode":  mode.rawValue
+            "retirementDate":   record.retirementDate?.isoString ?? "",
+            "changeRevision":   record.changeRevision,
+            "schemaVersion":    2,
+            "preferencesJSON":  prefsJSON
         ]
-        log.info("sending payload: date=\(record.retirementDate?.isoString ?? "nil") revision=\(record.changeRevision) schema=\(record.schemaVersion) mode=\(mode.rawValue)")
+        log.info("sending payload: date=\(record.retirementDate?.isoString ?? "nil") revision=\(record.changeRevision) schema=2 prefsLen=\(prefsJSON.count)")
         do {
             try session.updateApplicationContext(payload)
             log.info("updateApplicationContext succeeded")

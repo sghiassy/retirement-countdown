@@ -18,10 +18,13 @@ public enum CountdownFormatter {
         return formatter.string(from: d)
     }
 
-    public static func accessibilityLabel(for model: CountdownDisplayModel, mode: CountdownMode = .calendarDays) -> String {
+    public static func accessibilityLabel(
+        for model: CountdownDisplayModel,
+        preferences: CountdownPreferences = CountdownPreferences()
+    ) -> String {
         switch model {
         case .counting(let days, _):
-            let unit = mode == .workdays ? "workdays" : "days"
+            let unit = preferences.mode == .workdays ? "workdays" : "days"
             return "\(days) \(unit) until retirement"
         case .today:        return "Today is the day"
         case .retired:      return "Retired"
