@@ -192,6 +192,36 @@ final class WorkdayCountdownTests: XCTestCase {
         )
     }
 
+    // MARK: - Defensive edge cases
+
+    func testNegativePTOIsClampedAndDoesNotIncreaseCount() {
+        // Mon → Fri = 4 workdays. Negative PTO should be treated as 0, not add days.
+        let retirement = RetirementDate(string: "2026-10-02")!
+        let now = utcDate(2026, 9, 28)
+        let prefs = CountdownPreferences(mode: .workdays, ptoDays: -5)
+        XCTAssertEqual(
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: prefs),
+            .counting(days: 4)
+        )
+    }
+
+    func testCustomHolidayOnWeekendHasNoEffect() {
+        // Window: Fri 2026-09-25 → Fri 2026-10-02. Weekdays in (start, end] = Mon 28, Tue 29,
+        // Wed 30, Thu Oct 1, Fri Oct 2 = 5 workdays. Add Sat 2026-09-26 as a custom holiday —
+        // it's already excluded as a weekend, so the count must still be 5 (not 4).
+        let retirement = RetirementDate(string: "2026-10-02")!
+        let now = utcDate(2026, 9, 25)
+        let saturdayInWindow = RetirementDate(string: "2026-09-26")!
+        let prefs = CountdownPreferences(
+            mode: .workdays,
+            customHolidays: [Holiday(date: saturdayInWindow, label: "Weekend custom")]
+        )
+        XCTAssertEqual(
+            CountdownCalculator.state(for: retirement, on: now, in: utc, preferences: prefs),
+            .counting(days: 5)
+        )
+    }
+
     // MARK: - Hybrid test from the plan
 
     func testHybridThanksgivingOffCustomHolidayPlusPTO() {

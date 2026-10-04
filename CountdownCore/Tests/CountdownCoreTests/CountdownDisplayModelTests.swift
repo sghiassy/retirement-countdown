@@ -75,4 +75,28 @@ final class CountdownDisplayModelTests: XCTestCase {
     func testAccessibilityLabelUnconfigured() {
         XCTAssertEqual(CountdownFormatter.accessibilityLabel(for: .unconfigured), "Set retirement date")
     }
+
+    // MARK: - Preferences flow through DisplayModel
+
+    func testPreferencesFlowThroughMakeAppliesPTO() {
+        // 4 workdays - 2 PTO = 2 workdays. Verifies preferences propagate all the way
+        // through DisplayModel.make(), not just through CountdownCalculator.state().
+        let retirement = RetirementDate(string: "2026-10-02")!
+        let now = utcNoon("2026-09-28")
+        let prefs = CountdownPreferences(mode: .workdays, ptoDays: 2)
+        let model = CountdownDisplayModel.make(from: retirement, on: now, in: utc, preferences: prefs)
+        guard case .counting(let days, _) = model else {
+            return XCTFail("Expected .counting, got \(model)")
+        }
+        XCTAssertEqual(days, 2)
+    }
+
+    func testAccessibilityLabelHonorsPreferencesMode() {
+        let model: CountdownDisplayModel = .counting(days: 10, fullDate: "October 2, 2026")
+        let workdaysPrefs = CountdownPreferences(mode: .workdays)
+        XCTAssertEqual(
+            CountdownFormatter.accessibilityLabel(for: model, preferences: workdaysPrefs),
+            "10 workdays until retirement"
+        )
+    }
 }

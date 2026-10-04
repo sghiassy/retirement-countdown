@@ -58,7 +58,9 @@ public struct CountdownCalculator {
                     enabledFederalHolidays: preferences.enabledFederalHolidays,
                     customHolidayDates: customDates
                 )
-                days = max(0, raw - preferences.ptoDays)
+                // Clamp PTO to non-negative so malformed data can't *add* workdays.
+                let pto = max(0, preferences.ptoDays)
+                days = max(0, raw - pto)
             }
             return .counting(days: days)
         case 0:
