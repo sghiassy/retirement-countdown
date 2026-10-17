@@ -8,6 +8,8 @@ struct SettingsView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var showingAddHoliday = false
+    @State private var ptoText: String = ""
+    @FocusState private var ptoFieldFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -22,6 +24,13 @@ struct SettingsView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
                 }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { ptoFieldFocused = false }
+                }
+            }
+            .onAppear {
+                ptoText = String(preferences.ptoDays)
             }
             .sheet(isPresented: $showingAddHoliday) {
                 AddHolidayView { newHoliday in
@@ -37,23 +46,33 @@ struct SettingsView: View {
 
     private var ptoSection: some View {
         Section {
-            Stepper(value: Binding(
-                get: { preferences.ptoDays },
-                set: { newValue in
-                    preferences.ptoDays = newValue
-                    onChange(preferences)
-                }
-            ), in: 0...365) {
-                HStack {
-                    Text("PTO days")
-                    Spacer()
-                    Text("\(preferences.ptoDays)").foregroundStyle(.secondary)
-                }
+            HStack {
+                Text("PTO days")
+                Spacer()
+                TextField("0", text: $ptoText)
+                    .keyboardType(.numberPad)
+                    .multilineTextAlignment(.trailing)
+                    .focused($ptoFieldFocused)
+                    .frame(maxWidth: 80)
+                    .onChange(of: ptoText) { _, newValue in
+                        // Strip anything that isn't a digit (defense against paste on iPad)
+                        let digits = newValue.filter(\.isNumber)
+                        if digits != newValue {
+                            ptoText = digits
+                            return  // onChange will fire again with the sanitized value
+                        }
+                        let parsed = Int(digits) ?? 0
+                        let clamped = min(365, max(0, parsed))
+                        if clamped != preferences.ptoDays {
+                            preferences.ptoDays = clamped
+                            onChange(preferences)
+                        }
+                    }
             }
         } header: {
             Text("PTO")
         } footer: {
-            Text("PTO days are subtracted from the Workdays count only. Doesn't affect the All days count.")
+            Text("PTO days are subtracted from the Workdays count only. Doesn't affect the All days count. Max 365.")
         }
     }
 

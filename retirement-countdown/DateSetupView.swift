@@ -11,7 +11,7 @@ struct DateSetupView: View {
     init(existing: RetirementDate?, onSave: @escaping (RetirementDate) -> Void) {
         self.existing = existing
         self.onSave = onSave
-        var cal = Calendar(identifier: .gregorian)
+        let cal = Calendar(identifier: .gregorian)
         if let e = existing,
            let d = cal.date(from: DateComponents(year: e.year, month: e.month, day: e.day)) {
             _selectedDate = State(initialValue: d)
